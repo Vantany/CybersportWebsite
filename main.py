@@ -6,12 +6,10 @@ from flask import Flask, render_template
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'abcdef'
 app.config['JSON_AS_ASCII'] = False
-login_manager = LoginManager()
-login_manager.init_app(app)
 
 
 @app.errorhandler(404)
-def not_found(error): 
+def not_found(error):
     return "Страница не найдена", 404
 
 
@@ -22,4 +20,8 @@ def index():
 
 @app.route("/login")
 def login():
-    return render_template("login.html")
+    return render_template("login.html", title = "Авторизация")
+
+
+if __name__ == "__main__":
+    app.run()
