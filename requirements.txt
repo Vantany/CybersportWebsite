@@ -15,11 +15,9 @@ numpy
 psycopg2
 pytz
 requests
-scipy
 six
 SQLAlchemy
 SQLAlchemy-serializer
 urllib3
 Werkzeug
 WTForms
-scikit-learn
