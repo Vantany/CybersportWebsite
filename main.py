@@ -7,6 +7,7 @@ app.config["SECRET_KEY"] = 'oaoaooa'
 app.config["JSON_AS_ASCII"] = False
 
 
+
 @app.route("/")
 def index():
     return "<h1>IN PROGRESS</h1>"
