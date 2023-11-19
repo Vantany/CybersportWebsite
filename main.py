@@ -2,6 +2,8 @@ import os
 from flask import Flask, render_template, redirect, abort
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask import Flask, render_template
+from data.users import User, Team_leader, Judge
+from data import db_session
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'abcdef'
@@ -18,10 +20,11 @@ def index():
     return "<h1>IN PROGRESS</h1>"
 
 
-@app.route("/login")
+@app.route("/login", methods=['GET', 'POST'])
 def login():
     return render_template("login.html", title = "Авторизация")
 
 
 if __name__ == "__main__":
+    db_session.global_init("main")
     app.run()
