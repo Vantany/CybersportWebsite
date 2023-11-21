@@ -7,6 +7,7 @@ from data.proposals import Proposal
 from data.participants import Participant
 from data.tournaments import Tournament
 from data import db_session
+from forms.loginform import LoginForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'abcdef'
@@ -29,13 +30,13 @@ def get_proposal(proposal_id):
 
 def get_tournament(tournament_id):
     db_sess = db_session.create_session()
-    curr_tournament = db_sess.query(Proposal).filter(Proposal.id == tournament_id).first()
+    curr_tournament = db_sess.query(Tournament).filter(Tournament.id == tournament_id).first()
     return curr_tournament
 
 
 def get_participant(participant_id):
     db_sess = db_session.create_session()
-    curr_participant = db_sess.query(Proposal).filter(Proposal.id == participant_id).first()
+    curr_participant = db_sess.query(Participant).filter(Participant.id == participant_id).first()
     return curr_participant
 
 
@@ -56,7 +57,38 @@ def index():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    return render_template("login.html", title="Авторизация")
+    form = LoginForm()
+    if form.is_registration.data:
+        if form.validate_on_submit():
+            if form.password.data != form.password_again.data:
+                return render_template('login.html', title='Авторизация',
+                                       form=form,
+                                       message="Пароли не совпадают")
+            db_sess = db_session.create_session()
+            if db_sess.query(User).filter(User.email == form.email.data).first() or db_sess.query(User).filter(
+                    User.username == form.username.data).first():
+                return render_template('login.html', title='Авторизация',
+                                       form=form,
+                                       message='Такой пользователь уже существует')
+
+            user = User()
+            user.make_new(username=form.username.data, email=form.email.data,
+                          password=form.password.data, position=form.get_position())
+            db_sess.add(user)
+            db_sess.commit()
+            return redirect('/login')
+    else:
+        if form.validate_on_submit():
+            db_sess = db_session.create_session()
+            user = db_sess.query(User).filter(User.email == form.email.data).first()
+            if user and user.check_password(form.password.data):
+                login_user(user, remember=form.remember_me.data)
+                redirect("/")
+            return render_template('login.html', title='Авторизация',
+                                   message="Неправильный логин или пароль",
+                                   form=form)
+
+    return render_template('login.html', title='Авторизация', form=form)
 
 
 @app.route('/logout')
