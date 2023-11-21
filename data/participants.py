@@ -1,0 +1,28 @@
+import datetime
+import json
+import sqlalchemy
+from sqlalchemy import orm
+from flask_login import UserMixin
+from sqlalchemy_serializer import SerializerMixin
+
+from .db_session import SqlAlchemyBase
+from werkzeug.security import generate_password_hash, check_password_hash
+
+
+class Participant(SqlAlchemyBase, UserMixin, SerializerMixin):
+    __tablename__ = "participants"
+
+    id = sqlalchemy.Column(sqlalchemy.Integer,
+                           primary_key=True, autoincrement=True)
+    name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    gender = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    birth_date = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    gto = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    contact = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+
+    def make_new(self, name, gender, birth_date, gto, contact):
+        self.name = name
+        self.gender = gender
+        self.birth_date = birth_date
+        self.gto = gto
+        self.contact = contact
