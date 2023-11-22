@@ -7,7 +7,7 @@ from data.proposals import Proposal
 from data.participants import Participant
 from data.tournaments import Tournament
 from data import db_session
-from forms.loginform import LoginForm, RegistrationForm
+from forms.loginform import LoginForm, RegistrationForm, ToLoginForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'abcdef'
@@ -52,7 +52,12 @@ def unauthorized_access(error):
 
 @app.route("/")
 def index():
-    return "<h1>IN PROGRESS</h1>"
+    form = ToLoginForm()
+
+    if form.validate_on_submit():
+        return redirect("/login")
+
+    return render_template("main page.html", title="Главная страница", form=form)
 
 
 @app.route("/login", methods=['GET', 'POST'])

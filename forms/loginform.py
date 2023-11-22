@@ -18,8 +18,12 @@ class RegistrationForm(FlaskForm):
     email = StringField('Введите адрес электронной почты',
                         validators=[DataRequired(message="Поле 'почта' не может быть пустым")])
     position = SelectField("Выберите свою роль: ", choices=[("user", "Я капитан"), ("judge", "Я судья")])
-    submit = SubmitField('Зарегестрироваться')
+    submit = SubmitField('Зарегистрироваться')
 
     @property
     def get_position(self):
         return "user" if self.position.data == 0 else "judge"
+
+
+class ToLoginForm(FlaskForm):
+    submit = SubmitField('Войти как гость')
