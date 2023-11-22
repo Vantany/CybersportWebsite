@@ -14,14 +14,16 @@ class Participant(SqlAlchemyBase, UserMixin, SerializerMixin):
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    username = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    fullname = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     gender = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     birth_date = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     gto = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     contact = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
-    def make_new(self, name, gender, birth_date, gto, contact):
-        self.name = name
+    def make_new(self, username, fullname, gender, birth_date, gto, contact):
+        self.username = username
+        self.fullname = fullname
         self.gender = gender
         self.birth_date = birth_date
         self.gto = gto

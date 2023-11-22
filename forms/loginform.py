@@ -23,7 +23,3 @@ class RegistrationForm(FlaskForm):
     @property
     def get_position(self):
         return "user" if self.position.data == 0 else "judge"
-
-
-class ToLoginForm(FlaskForm):
-    submit = SubmitField('Войти как гость')

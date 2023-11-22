@@ -27,8 +27,8 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     @property
     def access_level(self):
         level = {
-            "user" : 0,
-            "judge" : 1
+            "user": 0,
+            "judge": 1
         }
         return level[self.position]
 
@@ -48,28 +48,13 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
         return self.password == password or check_password_hash(self.password, password)
 
     @property
-    def participant_list(self):
-        return json.load(self.participants)['participants']
-
-    def add_participant(self, participant_id):
-        participant_list = self.participants_list
-        participant_list.append(participant_id)
-        self.participants = json.dumps({'participants': participant_list})
-
-    @property
     def proposals_list(self):
-        return json.load(self.proposals)['proposals']
+        return json.loads(self.proposals)['proposals']
 
     def add_proposal(self, proposal_id):
         proposal_list = self.proposals_list
         proposal_list.add(proposal_id)
         self.participants = json.dumps({'proposals': proposal_list})
-
-    def delete_participant(self, participant_id):
-        partipant_list = self.participant_list
-        if participant_id in partipant_list:
-            partipant_list.remove(participant_id)
-        self.participants = json.dumps({'participants': partipant_list})
 
     def delete_proposal(self, proposal_id):
         proposal_list = self.proposals_list
@@ -79,15 +64,15 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
 
     @property
     def tournaments_list(self):
-        return json.load(self.tournaments)['tournaments']
+        return json.loads(self.tournaments)['tournaments']
 
     def add_tournament(self, tournament_id):
         tournaments_list = self.tournaments_list
         tournaments_list.append(tournament_id)
-        self.tournaments = json.dumps({'tournaments' : tournaments_list})
+        self.tournaments = json.dumps({'tournaments': tournaments_list})
 
     def delete_tournament(self, tournament_id):
         tournament_list = self.tournaments_list
         if tournament_id in tournament_list:
             tournament_list.remove(tournament_id)
-        self.tournaments = json.dumps({'tournaments' : tournament_list})
+        self.tournaments = json.dumps({'tournaments': tournament_list})

@@ -3,7 +3,7 @@ body
 	color: white;
 	margin: 0;
 	padding: 0;
-	background-image: linear-gradient(to right, black 20%, black 25%, darkslateblue);
+	background-image: linear-gradient(to right, black 50%, black 25%, darkslateblue);
 }
 
 label
@@ -62,14 +62,14 @@ label
 
 #sign-up-link:hover
 {
-	background: white;
+	background-color: white;
 	color: black;
 }
 
 #log-in-link:hover
 {
-	background: white;
-	color: black;	
+	background-color: white;
+	color: black;
 }
 
 #log-in-link
@@ -93,7 +93,7 @@ label
 }
 
 
-#login-block
+.block
 {
  width: 80%;
  padding: 5%;
@@ -102,6 +102,12 @@ label
  border-width: 2px;
  border-radius: 20px;
  background: rgba(255, 255, 255, 0.1);
+}
+
+#login-block
+{
+	 transition: height 0.5s;
+	 height: 200px;
 }
 
 #right
@@ -120,7 +126,7 @@ label
 	margin-bottom: 5%;
 	background: rgba(0, 0, 0, 0.0);
 	color: white;
-	
+
 	border: solid;
 	border-width: 2px;
 	border-color: white;
@@ -141,7 +147,7 @@ label
 	text-align: center;
 	width: 100%;
 	margin-top: 5%;
-	padding: 2%; 
+	padding: 2%;
 	background-color: darkslateblue;
 	color: white;
 	border-radius: 50px;
@@ -172,4 +178,110 @@ label
 	color: #ccc;
 	text-align: justify;
 }
+
+#guest-button
+{
+	text-align: center;
+	margin: 5% 10% 0 10%;
+	width: 80%;
+	font-size: 15px;
+	border-radius: 50px;
+	border-width: 2px;
+	border-style: solid;
+	background-color: rgba(255, 255, 255, 0);
+	color: darkslateblue;
+	border-color: darkslateblue;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+}
+
+#guest-button:hover
+{
+	background-color: darkslateblue;
+	color: white;
+}
+
+#live-games
+{
+	background-color: rgba(255, 255, 255, 0.2);
+	border-radius: 15px;
+	width: 90%;
+	margin: 0 5%;
+	border-width: 3px;
+	border-style: solid;
+	border-color: whitesmoke;
+	color: white;
+	padding: 1%;
+}
+
+#live-game
+{
+	margin-bottom: 1%;
+	border-bottom: 2px;
+	border-bottom-color: whitesmoke;
+	border-bottom-style: solid;
+}
+
+#live-tag
+{
+	background-color: red;
+	color: white;
+	border-radius: 10px;
+	width: 15%;
+	position: relative;
+	top: -28px;
+	left: 2.5%;
+	font-size: 17px;
+	padding: 4px;
+	margin: 0 40%;
+}
+
+#game-name
+{
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	display: inline;
+	font-weight: 650;
+	font-size: 20px;
+}
+
+.team-name
+{
+	color: red;
+	letter-spacing: 1px;
+}
+
+#tournir-table
+{
+	width: 90%;
+	height: 80%;
+}
+
+#tournir-table-content
+{
+	height: 500px;
+	overflow-y: auto;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 
