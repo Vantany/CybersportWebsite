@@ -8,6 +8,7 @@
 	<script type="text/javascript">
 		function showReg()
 		{
+
 			document.getElementById('sign-up-link').style.background = "darkslateblue";
 			document.getElementById('log-in-link').style.background = "rgba(0,0,0,0)";
 			document.getElementById('register').style.display = "block";
@@ -31,27 +32,29 @@
 					<input id = "log-in-link" type="button" name="answer" value="Вход" onclick="showLog()" />
 				</div>
 				<div id="login-block">
-					<form id = "login" style="display: block;">
-						<label>Логин или адрес электронной почты</label><br>
-						<input class="reg-input" type="text" name="login"><br>
-						<label>Пароль</label><br>
-						<input type="password" class="reg-input" type="text" name="password"><br>
-						<button class="submit-button">Войти</button>
+					<form id = "login" style="display: block;" action="" method="post">
+						{{ login_form.hidden_tag() }}
+						{{ login_form.login_or_email.label }}<br>
+						{{ login_form.login_or_email(class = "reg-input", type = "text")}}<br>
+						{{ login_form.password.label }}<br>
+						{{ login_form.password(class = "reg-input", type = "password")}}<br>
+						{{ login_form.submit(class = "submit-button") }}
+						{{ message }}
 					</form>
-					<form id = "register" style="display: none;">
-						<label>Придумайте логин</label><br>
-						<input class="reg-input" type="text" name="login"><br>
-						<label>Введите адрес своей электронной почты</label><br>
-						<input class="reg-input" type="text" name="mail"><br>
-						<label>Введите пароль</label><br>
-						<input type="password" class="reg-input" type="text" name="password"><br>
-						<label>Повторите пароль</label><br>
-						<input type="password" class="reg-input" type="text" name="password2"><br>
-						<input id = "capitain-radio" type="radio" name="type" value="capitain" checked="true">
-						<label for = "judge-radio">Я - капитан команды</label><br>
-						<input id = "judge-radio" type="radio" name="type" value="judge">
-						<label for = "judge-radio">Я - судья</label><br>
-						<button class="submit-button">Зарегистрироваться</button>
+					<form id = "register" style="display: none;" action="" method="post">
+						{{ register_form.hidden_tag() }}
+						{{ register_form.login.label }}<br>
+						{{ register_form.login(class = "reg-input", type = "text") }}<br>
+						{{ register_form.email.label }}<br>
+						{{ register_form.email(class = "reg-input", type = "text") }}<br>
+						{{ register_form.password.label }}<br>
+						{{ register_form.password(class = "reg-input", type = "password") }}<br>
+						{{ register_form.password_again.label }}<br>
+						{{ register_form.password_again(class = "reg-input", type = "password") }}<br>
+						{{ register_form.position.label }}
+						{{ register_form.position }}
+						{{ register_form.submit(class = "submit-button") }}
+						{{ message }}
 					</form>
 				</div>
 			</div>

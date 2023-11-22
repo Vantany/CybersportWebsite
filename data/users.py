@@ -37,6 +37,9 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
         self.email = email
         self.set_password(password)
         self.position = position
+        self.proposals = json.dumps({"proposals": []})
+        self.participants = json.dumps({"participants": []})
+        self.tournaments = json.dumps({"tournaments": []})
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
