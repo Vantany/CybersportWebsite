@@ -15,6 +15,8 @@ class AddTournamentForm(FlaskForm):
                              validators=[DataRequired(message="Поле 'дисциплина' не может быть пустым")])
     participants_amount = StringField('Введите колличество участников в одной команде',
                                       validators=[DataRequired(message="Данное поле не может быть пустым")])
+    teams_amount = StringField('Введите колличество команд',
+                               validators=[DataRequired(message="Данное поле не может быть пустым")])
     registration_time = DateField('Введите дату начала регистрации', format='%d-%m-%Y',
                                   validators=[DataRequired(message="Данное поле не может быть пустым")])
     start_time = DateField('Введите дату открытия соревнования', format='%d-%m-%Y',

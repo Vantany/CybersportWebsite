@@ -83,7 +83,6 @@
 						{{ login_form.password.label }}<br>
 						{{ login_form.password(class = "reg-input", type = "password")}}<br>
 						{{ login_form.submit(class = "submit-button") }}
-						{{ message }}
 					</form>
 					<form id = "register" style="display: none;" action="" method="post">
 						{{ register_form.hidden_tag() }}
@@ -98,10 +97,12 @@
 						{{ register_form.position.label }}
 						{{ register_form.position }}
 						{{ register_form.submit(class = "submit-button") }}
-						{{ message }}
 					</form>
 				</div>
 				<a href = "/"><input id = "guest-button" type="button" name="answer" value="Войти как гость"></a>
+				{% for cat, msg in get_flashed_messages(True) %}
+					<div class="team-name">{{msg}}</div>
+				{% endfor %}
 			</div>
 		</div>
 		<div id="right">

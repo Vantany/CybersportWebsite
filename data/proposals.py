@@ -12,13 +12,15 @@ class Proposal(SqlAlchemyBase, UserMixin, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
     team_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    team_name = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     status = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)
     participants = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     tournament_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
 
-    def make_new(self, team_id, tournament_id):
+    def make_new(self, team_id, tournament_id, team_name):
         self.team_id = team_id
         self.tournament_id = tournament_id
+        self.team_name = team_name
         self.status = False
 
     def approve_proposal(self):

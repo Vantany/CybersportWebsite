@@ -28,3 +28,11 @@ class Participant(SqlAlchemyBase, UserMixin, SerializerMixin):
         self.birth_date = birth_date
         self.gto = gto
         self.contact = contact
+
+    def update(self, username, fullname, gender, birth_date, gto, contact):
+        self.username = username
+        self.fullname = fullname
+        self.gender = gender
+        self.birth_date = birth_date
+        self.gto = gto
+        self.contact = contact
