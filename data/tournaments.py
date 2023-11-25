@@ -32,7 +32,7 @@ class Tournament(SqlAlchemyBase, UserMixin, SerializerMixin):
         self.place = place
         self.organizer = organizer
         self.discipline = discipline
-        self.deadlines = deadlines
+        self.deadlines = json.dumps({"deadlines": deadlines})
         self.participants_amount = participants_amount
         self.teams_amount = teams_amount
         self.status = 0
@@ -41,15 +41,20 @@ class Tournament(SqlAlchemyBase, UserMixin, SerializerMixin):
     def add_results(self, results):
         self.results = results
 
+    @property
+    def get_start_date(self):
+        date = json.loads(self.deadlines)["deadlines"]["start"]
+        return str(date).split()[0].split("-")[::-1]
+
     def update_status(self):
         status = json.loads(self.deadlines)['deadlines']
-        if datetime.datetime.today() > status["registration"]:
+        if datetime.datetime.today() > datetime.datetime.strptime(status["registration"], "%Y-%m-%d"):
             self.status = 1
-        if datetime.datetime.today() > status["start"]:
+        if datetime.datetime.today() > datetime.datetime.strptime(status["start"], "%Y-%m-%d"):
             self.status = 2
-        if datetime.datetime.today() > status["end"]:
+        if datetime.datetime.today() > datetime.datetime.strptime(status["end"], "%Y-%m-%d"):
             self.status = 3
-        if datetime.datetime.today() > status["close"]:
+        if datetime.datetime.today() > datetime.datetime.strptime(status["close"], "%Y-%m-%d"):
             self.status = 4
 
     def edit(self, name, place, organizer, discipline, deadlines, participants_amount, teams_amount):

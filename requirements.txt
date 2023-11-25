@@ -21,3 +21,7 @@ SQLAlchemy-serializer
 urllib3
 Werkzeug
 WTForms
+pandas
+openpyxl
+xlsxwriter
+xlrd

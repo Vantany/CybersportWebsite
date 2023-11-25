@@ -18,29 +18,28 @@
 				<div class="block" style="background: darkslateblue; height: 450px;">
 					<h4 style="color: white; text-align: center;">Мои ивенты</h4>
 					<div style="height: 90%; overflow-y: auto;">
+					{% if not is_empty %}
+						{% for proposal in proposals %}
 						<div class="block" style="margin-top: 10px;">
-							<h6 style="color: white; text-align: center;">Международный турнир по Доте</h6>
+							<h6 style="color: white; text-align: center;">{{ proposal["tournament_name"] }}</h6>
 							<div id="memebers" style="color:white;">
 								участники:
-								<b style="color: white; background-color: deepskyblue; border-radius: 7px; padding: 3px;">Вася</b>
-								<b style="color: white; background-color: deepskyblue; border-radius: 7px; padding: 3px;">Маша</b>
-								<b style="color: white; background-color: deepskyblue; border-radius: 7px; padding: 3px;">Анатолий</b>
+								{% for participant in proposal["team"] %}
+								<b style="color: white; background-color: deepskyblue; border-radius: 7px; padding: 3px;">{{participant}}</b>
+								{% endfor %}
 							</div>
-							<i style="color:red">Запрос на подтверждении</i>
+							{% if proposal["status"] %}
+								<i style="color:green">Заявка одобрена</i>
+							{% else %}
+								<i style="color:red">Заявка на рассмотрении</i>
+							{% endif %}
 						</div>
-						<div class="block" style="margin-top: 10px;">
-							<h6 style="color: white; text-align: center;">Международный турнир по Доте</h6>
-							<div id="memebers" style="color:white;">
-								участники:
-								<b style="color: white; background-color: deepskyblue; border-radius: 7px; padding: 3px;">Вася</b>
-								<b style="color: white; background-color: deepskyblue; border-radius: 7px; padding: 3px;">Маша</b>
-								<b style="color: white; background-color: deepskyblue; border-radius: 7px; padding: 3px;">Анатолий</b>
-							</div>
-							<i style="color:red">Запрос на подтверждении</i>
-						</div>
+						{% endfor %}
+						{% endif %}
 					</div>
 				</div>
-				<input id = "guest-button" type="button" name="answer" value="Выйти">
+				<a href = "/"><input id = "guest-button" type="button" name="answer" value="Вернуться на главную"></a>
+				<a href = "/logout"><input id = "guest-button" type="button" name="answer" value="Выйти"></a>
 			</div>
 		</div>
 		<div id="right">
@@ -48,35 +47,15 @@
 				<div id = "tournir-table" class="block" style="margin-top: 20%;">
 					<h6 style="color: white; text-align:center; text-transform: uppercase; letter-spacing: 5px;">Самые хайповые турниры</h6>
 					<div id = "tournir-table-content" style="height: 300px;">
-						<div style="color: white;">
-							Международный турнир по Доте 
-							<input id = "guest-button" type="button" name="answer" value="Участвовать">
-							<hr>
-						</div>
-						<div style="color: white;">
-							Международный турнир по Геншин
-							<hr>
-						</div>
-						<div style="color: white;">
-							Турнир по доте в школе №666
-							<hr>
-						</div>
-						<div style="color: white;">
-							Турнир по доте в школе №667
-							<hr>
-						</div>
-						<div style="color: white;">
-							Турнир по доте в школе №668
-							<hr>
-						</div>
-						<div style="color: white;">
-							Турнир по доте в школе №669
-							<hr>
-						</div>
-						<div style="color: white;">
-							Турнир по доте в школе №670
-							<hr>
-						</div>
+						{% if not is_empty_tournaments %}
+							{% for tournament in tournaments %}
+								<div style="color: white;">
+									{{ tournament["name"] }}
+									<a href = "/add_proposal/{{ tournament['id'] }}"><input id = "guest-button" type="button" name="answer" value="Участвовать"></a>
+									<hr>
+								</div>
+							{% endfor %}
+						{% endif %}
 					</div>
 				</div>
 				<div class="block" style="width: 90%; margin: 10px auto; padding: 1%">

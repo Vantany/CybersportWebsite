@@ -37,58 +37,14 @@
 					<div id = "tournir-table" class = "block" style="background: rgba(0, 0, 0, 0.0); border-color: darkslateblue;">
 						<h6 style="color: darkslateblue; text-align:center; text-transform: uppercase; letter-spacing: 5px;">Самые хайповые турниры</h6>
 						<div id = "tournir-table-content">
-							<div style="color: white;">
-								Международный турнир по Доте
-								<hr>
-							</div>
-							<div style="color: white;">
-								Международный турнир по Геншин
-								<hr>
-							</div>
-							<div style="color: white;">
-								Турнир по доте в школе №666
-								<hr>
-							</div>
-							<div style="color: white;">
-								Турнир по доте в школе №667
-								<hr>
-							</div>
-							<div style="color: white;">
-								Турнир по доте в школе №668
-								<hr>
-							</div>
-							<div style="color: white;">
-								Турнир по доте в школе №669
-								<hr>
-							</div>
-							<div style="color: white;">
-								Турнир по доте в школе №670
-								<hr>
-							</div>
-							<div style="color: white;">
-								Турнир по доте в школе №670
-								<hr>
-							</div>
-							<div style="color: white;">
-								Турнир по доте в школе №670
-								<hr>
-							</div>
-							<div style="color: white;">
-								Турнир по доте в школе №670
-								<hr>
-							</div>
-							<div style="color: white;">
-								Турнир по доте в школе №670
-								<hr>
-							</div>
-							<div style="color: white;">
-								Турнир по доте в школе №670
-								<hr>
-							</div>
-							<div style="color: white;">
-								Турнир по доте в школе №670
-								<hr>
-							</div>
+							{% if not is_empty %}
+								{% for tournament in tournaments %}
+									<a href = "/tournament/{{tournament['id']}}" style="text-decoration: none"><div style="color: white;">
+										{{ tournament["name"] }}
+										<hr>
+									</div></a>
+								{% endfor %}
+							{% endif %}
 						</div>
 					</div>
 					{% if current_user.is_authenticated %}

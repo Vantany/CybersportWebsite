@@ -12,7 +12,7 @@ class Proposal(SqlAlchemyBase, UserMixin, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
     team_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
-    team_name = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    team_name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     status = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)
     participants = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     tournament_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
@@ -21,13 +21,14 @@ class Proposal(SqlAlchemyBase, UserMixin, SerializerMixin):
         self.team_id = team_id
         self.tournament_id = tournament_id
         self.team_name = team_name
+        self.participants = json.dumps({'participants': []})
         self.status = False
 
     def approve_proposal(self):
         self.status = True if (self.status == False) else False
 
     @property
-    def participant_list(self):
+    def participants_list(self):
         return json.loads(self.participants)['participants']
 
     def add_participant(self, participant_id):

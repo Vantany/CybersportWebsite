@@ -69,7 +69,7 @@ label
 #log-in-link:hover
 {
 	background-color: white;
-	color: black;
+	color: black;	
 }
 
 #log-in-link
@@ -126,7 +126,7 @@ label
 	margin-bottom: 5%;
 	background: rgba(0, 0, 0, 0.0);
 	color: white;
-
+	
 	border: solid;
 	border-width: 2px;
 	border-color: white;
@@ -147,7 +147,7 @@ label
 	text-align: center;
 	width: 100%;
 	margin-top: 5%;
-	padding: 2%;
+	padding: 2%; 
 	background-color: darkslateblue;
 	color: white;
 	border-radius: 50px;
@@ -270,18 +270,18 @@ label
 /* Track */
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
-  border-radius: 5px;
+  border-radius: 5px; 
 }
-
+ 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #888; 
   border-radius: 5px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #555; 
 }
 
 

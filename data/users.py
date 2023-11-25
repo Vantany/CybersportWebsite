@@ -19,7 +19,6 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     email = sqlalchemy.Column(sqlalchemy.String,
                               index=True, unique=True, nullable=True)
     password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    participants = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     proposals = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     tournaments = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     position = sqlalchemy.Column(sqlalchemy.String, nullable=True)
@@ -38,7 +37,6 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
         self.set_password(password)
         self.position = position
         self.proposals = json.dumps({"proposals": []})
-        self.participants = json.dumps({"participants": []})
         self.tournaments = json.dumps({"tournaments": []})
 
     def set_password(self, password):
@@ -53,8 +51,9 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
 
     def add_proposal(self, proposal_id):
         proposal_list = self.proposals_list
-        proposal_list.add(proposal_id)
-        self.participants = json.dumps({'proposals': proposal_list})
+        proposal_list.append(proposal_id)
+        print(proposal_list)
+        self.proposals = json.dumps({'proposals': proposal_list})
 
     def delete_proposal(self, proposal_id):
         proposal_list = self.proposals_list

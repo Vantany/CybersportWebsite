@@ -1,12 +1,15 @@
+import json
 import os
 from flask import Flask, render_template, redirect, abort, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask import Flask, render_template
+import pandas as pd
 from data.users import User
 from data.proposals import Proposal
 from data.participants import Participant
 from data.tournaments import Tournament
 from data import db_session
+# from email_sender import send_email
 from forms.loginform import LoginForm, RegistrationForm
 from forms.addtournamentform import AddTournamentForm
 from forms.addproposalform import AddProposalForm
@@ -43,6 +46,10 @@ def get_participant(participant_id):
     return curr_participant
 
 
+def export_tournament_data(tournament_id):
+    pass
+
+
 @app.errorhandler(404)
 def not_found(error):
     return "Страница не найдена", 404
@@ -55,7 +62,16 @@ def unauthorized_access(error):
 
 @app.route("/")
 def index():
-    return render_template("main page.html", title="Главная страница")
+    db_sess = db_session.create_session()
+    tournaments = []
+    for tournament in db_sess.query(Tournament).all():
+        tournaments.append({
+            "name" : tournament.name,
+            "id" : tournament.id
+        })
+    return render_template("main page.html", title="Главная страница",
+                           tournaments = tournaments,
+                           is_empty = len(tournaments) == 0)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -108,19 +124,29 @@ def account():
         my_proposals = []
         for proposal_id in my_proposals_ids:
             current_proposal = db_sess.query(Proposal).filter(Proposal.id == proposal_id).first()
-            tourtament = db_sess.query(Tournament).filter(Tournament.id == current_proposal.tourtament_id).first()
+            tournament = db_sess.query(Tournament).filter(Tournament.id == current_proposal.tournament_id).first()
             participants = []
-            for participant in current_proposal.participant_list():
+            for participant_id in current_proposal.participants_list:
+                participant = get_participant(participant_id)
                 participants.append(participant.username)
             proposal = {
-                "tornament_name": tourtament.name,
+                "tournament_name": tournament.name,
                 "team": participants,
                 "status": current_proposal.status
             }
             my_proposals.append(proposal)
+
+        tournaments = []
+        for tournament in db_sess.query(Tournament).all():
+            tournaments.append({
+                "name" : tournament.name,
+                "id" : tournament.id
+            })
         return render_template('index-leader.html',
                                proposals=my_proposals,
-                               is_empty=len(my_proposals) == 0)
+                               is_empty=len(my_proposals) == 0,
+                               tournaments = tournaments,
+                               is_empty_tournaments = len(tournaments) == 0)
     else:
         db_sess = db_session.create_session()
         my_tournaments_ids = current_user.tournaments_list
@@ -139,13 +165,13 @@ def account():
                 "tournament_name": current_tournament.name,
                 "proposals_amount": proposal_amount,
                 "proposals_need": current_tournament.teams_amount,
-                "tournament_status": deadlines[current_tournament.status]
+                "tournament_status": deadlines[current_tournament.status],
+                "date": current_tournament.get_start_date
             }
             my_tournaments.append(tournament)
-
         for proposal_id in not_confirmed_proposals:
             current_proposal = get_proposal(proposal_id)
-            current_tournament = get_tournament(current_proposal.tourtament_id)
+            current_tournament = get_tournament(current_proposal.tournament_id)
             proposal = {
                 "proposal_id": current_proposal.id,
                 "team_name": current_proposal.team_name,
@@ -165,8 +191,14 @@ def approve_proposal(proposal_id):
     if current_user.access_level == 0:
         return "Вы не имеете таких прав доступа"
     else:
+        db_sess = db_session.create_session()
         proposal = get_proposal(proposal_id)
         proposal.approve_proposal()
+        db_sess.commit()
+        # tournament_name = get_tournament(proposal.tournament_id).name
+        # for participant_id in proposal.participant_list:
+        #     send_email(participant_id, f"""Мы рады сообщить, что заявка вашей команды -
+        #                        {proposal.team_name} одобрена и вы допущены до участия в соревновании""")
         return redirect("/account")
 
 
@@ -178,25 +210,36 @@ def add_proposal(tournament_id):
     else:
         form = AddProposalForm()
         tournament = get_tournament(tournament_id)
-        form.data_expansion(tournament.participants_amount)
+        participants_ids = []
         proposal = Proposal()
         if form.validate_on_submit():
+            print(True)
             db_sess = db_session.create_session()
-            for i in range(tournament.participants_amount):
+            for part in form.participants:
                 participant = Participant()
-                participant.make_new(username=form.username[i].data,
-                                     fullname=form.fullname[i].data, gender=form.gender[i].data,
-                                     birth_date=form.birth_date[i].data, gto=form.gto[i].data,
-                                     contact=form.contact[i].data)
+                participant.make_new(username=part.username.data,
+                                     fullname=part.fullname.data, gender=part.gender.data,
+                                     birth_date=str(part.birth_date.data), gto=part.gto.data,
+                                     contact=part.contact.data)
                 db_sess.add(participant)
-                proposal.add_participant(participant.id)
+                db_sess.commit()
+                participants_ids.append(participant.id)
             proposal.make_new(team_id=current_user.id,
                               team_name=form.team_name.data, tournament_id=tournament_id)
             db_sess.add(proposal)
             db_sess.commit()
+
+            user = db_sess.query(User).filter(User.id == current_user.id).first()
+            user.add_proposal(proposal.id)
+            db_sess.commit()
+
+            for participant_id in participants_ids:
+                proposal.add_participant(participant_id)
+                db_sess.commit()
+
             return redirect('/account')
 
-    return render_template('add_proposal.html', form=form)
+    return render_template('add_proposal.html', form=form, tournament_name=tournament.name)
 
 
 @app.route('/edit_proposal/<int:proposal_id>', methods=["POST", "GET"])
@@ -213,7 +256,7 @@ def edit_proposal(proposal_id):
         "gto": [],
         "contact": []
     }
-    for participant_id in proposal.participant_list:
+    for participant_id in proposal.participants_list:
         participant = get_participant(participant_id)
         data["id"].append(participant_id)
         data["username"].append(participant.username)
@@ -226,7 +269,6 @@ def edit_proposal(proposal_id):
     if proposal:
         form = AddProposalForm()
         tournament = get_tournament(proposal.tournament_id)
-        form.data_expansion(tournament.participants_amount)
         if form.validate_on_submit():
             db_sess = db_session.create_session()
             for i in range(tournament.participants_amount):
@@ -248,7 +290,7 @@ def delete_proposal(proposal_id):
     db_sess = db_session.create_session()
     proposal = get_proposal(proposal_id)
     if proposal:
-        for participant_id in proposal.participant_list:
+        for participant_id in proposal.participants_list:
             participant = get_participant(participant_id)
             db_sess.delete(participant)
         user = db_sess.query(User).filter(User.id == proposal.team_id).first()
@@ -263,11 +305,12 @@ def delete_proposal(proposal_id):
 
 @app.route('/add_tournament', methods=["POST", "GET"])
 @login_required
-def add_tournament():
+def add_new_tournament():
     if current_user.access_level == 0:
         return "Недостаточно прав доступа для проведения турнира"
     else:
         form = AddTournamentForm()
+
         if form.validate_on_submit():
             db_sess = db_session.create_session()
             new_tournament = Tournament()
@@ -275,17 +318,19 @@ def add_tournament():
             new_tournament.make_new(name=form.name.data, place=form.place.data,
                                     organizer=form.organizer.data, discipline=form.discipline.data,
                                     deadlines=form.get_deadlines(),
-                                    participants_amount=form.participants_amount.data)
-
+                                    participants_amount=form.participants_amount.data,
+                                    teams_amount=form.teams_amount.data)
             db_sess.add(new_tournament)
             db_sess.commit()
-            current_user.add_tournament(new_tournament.id)
+
+            user = db_sess.query(User).filter(User.id == current_user.id).first()
+            user.add_tournament(new_tournament.id)
             db_sess.commit()
 
             return redirect("/account")
 
-        return render_template("add_tourtament.html",
-                               form=form)
+    return render_template("add_tournament.html",
+                           form=form)
 
 
 @app.route('/edit_tournament/<int:tournament_id>', methods=["POST", "GET"])
@@ -298,7 +343,7 @@ def edit_tournament(tournament_id):
         if form.validate_on_submit():
             tournament.edit(name=form.name.data, place=form.place.data,
                             organizer=form.organizer.data, discipline=form.discipline.data,
-                            deadlines=form.get_deadlines(),
+                            deadlines=form.get_deadlines,
                             participants_amount=form.participants_amount.data)
             db_sess.commit()
     else:
@@ -316,7 +361,7 @@ def delete_tournament(tournament_id):
         if tournament_id in current_user.tournament_list():
             current_user.delete_tournament(tournament_id)
         for proposal in db_sess.query(Proposal).filter(Proposal.tournament_id == tournament_id).all():
-            for participant_id in proposal.participant_list:
+            for participant_id in proposal.participants_list:
                 participant = get_participant(participant_id)
                 db_sess.delete(participant)
             user = db_sess.query(User).filter(User.id == proposal.team_id).first()
@@ -328,9 +373,23 @@ def delete_tournament(tournament_id):
     return redirect('/account')
 
 
-@app.route('/tournament/<int:tournament_id>', methods=["POST", "GET"])
-def tournament(tournament_id):
-    pass
+@app.route('/tournament/<int:tournament_id>', methods=["GET", "POST"])
+def tournament_page(tournament_id):
+    current_tournament = get_tournament(tournament_id)
+    if not current_tournament:
+        abort(404)
+    else:
+        tournament = {
+            "name" : current_tournament.name,
+            "discipline" : current_tournament.discipline,
+            "place" : current_tournament.place,
+            "organizer" : current_tournament.organizer,
+            "registration" : json.loads(current_tournament.deadlines)["deadlines"]["registration"],
+            "start" : json.loads(current_tournament.deadlines)["deadlines"]["start"],
+            "end" : json.loads(current_tournament.deadlines)["deadlines"]["end"],
+            "close" : json.loads(current_tournament.deadlines)["deadlines"]["close"]
+        }
+    return render_template("tournament.html", tournament = tournament)
 
 
 if __name__ == "__main__":
